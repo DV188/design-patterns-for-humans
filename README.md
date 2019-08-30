@@ -70,55 +70,54 @@ Wikipedia says
 **Programmatic Example**
 
 First of all we have a door interface and the implementation
-```php
-interface Door
+```csharp
+public interface IDoor
 {
-    public function getWidth(): float;
-    public function getHeight(): float;
+    int GetHeight();
+    int GetWidth();
 }
 
-class WoodenDoor implements Door
+public class WoodenDoor : IDoor
 {
-    protected $width;
-    protected $height;
+    private int Height { get; set; }
+    private int Width { get; set; }
 
-    public function __construct(float $width, float $height)
+    public WoodenDoor(int height, int width)
     {
-        $this->width = $width;
-        $this->height = $height;
+        this.Height = height;
+        this.Width = width;
     }
 
-    public function getWidth(): float
+    public int GetHeight()
     {
-        return $this->width;
+        return this.Height;
     }
-
-    public function getHeight(): float
+    public int GetWidth()
     {
-        return $this->height;
+        return this.Width;
     }
 }
 ```
 Then we have our door factory that makes the door and returns it
-```php
-class DoorFactory
+```csharp
+public static class DoorFactory
 {
-    public static function makeDoor($width, $height): Door
+    public static IDoor MakeDoor(int height, int width)
     {
-        return new WoodenDoor($width, $height);
+        return new WoodenDoor(height, width);
     }
 }
 ```
 And then it can be used as
-```php
+```csharp
 // Make me a door of 100x200
-$door = DoorFactory::makeDoor(100, 200);
+var door = DoorFactory.makeDoor(100, 200);
 
-echo 'Width: ' . $door->getWidth();
-echo 'Height: ' . $door->getHeight();
+Console.WriteLine($"Width: { door.getWidth() }");
+Console.WriteLine($"Height: { door.getHeight() }");
 
 // Make me a door of 50x100
-$door2 = DoorFactory::makeDoor(50, 100);
+var door2 = DoorFactory.makeDoor(50, 100);
 ```
 
 **When to Use?**
@@ -141,59 +140,56 @@ Wikipedia says
 
 Taking our hiring manager example above. First of all we have an interviewer interface and some implementations for it
 
-```php
-interface Interviewer
+```csharp
+interface IInterviewer
 {
-    public function askQuestions();
+    void AskQuestions();
 }
 
-class Developer implements Interviewer
+class Developer : IInterviewer
 {
-    public function askQuestions()
+    public void AskQuestions()
     {
-        echo 'Asking about design patterns!';
+        Console.WriteLine("Asking about design patterns!");
     }
 }
 
-class CommunityExecutive implements Interviewer
+class CommunityExecutive : IInterviewer
 {
-    public function askQuestions()
+    public void AskQuestions()
     {
-        echo 'Asking about community building';
+        Console.WriteLine("Asking about community building!");
     }
 }
 ```
 
 Now let us create our `HiringManager`
 
-```php
+```csharp
 abstract class HiringManager
 {
-
     // Factory method
-    abstract protected function makeInterviewer(): Interviewer;
-
-    public function takeInterview()
+    abstract protected IInterviewer MakeInterviewer();
+    public void TakeInterview()
     {
-        $interviewer = $this->makeInterviewer();
-        $interviewer->askQuestions();
+        var interviewer = this.MakeInterviewer();
+        interviewer.AskQuestions();
     }
 }
-
 ```
 Now any child can extend it and provide the required interviewer
-```php
-class DevelopmentManager extends HiringManager
+```csharp
+class DevelopmentManager : HiringManager
 {
-    protected function makeInterviewer(): Interviewer
+    protected override IInterviewer MakeInterviewer()
     {
         return new Developer();
     }
 }
 
-class MarketingManager extends HiringManager
+class MarketingManager : HiringManager
 {
-    protected function makeInterviewer(): Interviewer
+    protected override IInterviewer MakeInterviewer()
     {
         return new CommunityExecutive();
     }
@@ -201,12 +197,12 @@ class MarketingManager extends HiringManager
 ```
 and then it can be used as
 
-```php
-$devManager = new DevelopmentManager();
-$devManager->takeInterview(); // Output: Asking about design patterns
+```csharp
+var devManager = new DevelopmentManager();
+devManager.TakeInterview(); //Output : Asking about design patterns!
 
-$marketingManager = new MarketingManager();
-$marketingManager->takeInterview(); // Output: Asking about community building.
+var marketingManager = new MarketingManager();
+marketingManager.TakeInterview();//Output : Asking about community building!
 ```
 
 **When to use?**
